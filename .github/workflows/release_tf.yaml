@@ -1,0 +1,44 @@
+name: release tf
+
+on:
+  push:
+    tags:
+      - 'v**'
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        os: [linux, darwin, windows]
+    env:
+      GOARCH: amd64
+      GOOS: ${{ matrix.os }}
+    name: release
+    runs-on: ubuntu-latest
+    outputs:
+      sha_linux: ${{ steps.shasum.outputs.sha_linux }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+      - run: go test ./tf/tests
+        env:
+          GOOS: linux
+      - run: go test ./common/**/tests
+        env:
+          GOOS: linux
+      - run: .github/package-artifacts.sh
+        env:
+          ARTIFACT_DIR: artifacts
+          BINARY_NAME: tf
+          GITHUB_REF: ${{ github.ref }}
+          GOOS: ${{ matrix.os }}
+        working-directory: tf/
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "artifacts/*{.tar.gz,.sha256}"
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
