@@ -34,7 +34,6 @@ jobs:
           BINARY_NAME: tf
           GITHUB_REF: ${{ github.ref }}
           GOOS: ${{ matrix.os }}
-        working-directory: tf/
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
