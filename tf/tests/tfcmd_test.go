@@ -1,4 +1,4 @@
-package tf_test
+package tfcmd_test
 
 import (
 	"errors"
