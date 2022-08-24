@@ -24,7 +24,7 @@ func TestValidateWorkingDirectory(t *testing.T) {
 		os.Create(backendFile)
 		defer os.Remove(backendFile)
 
-		actual, err := tf.ValidateWorkingDirectory(currentDir)
+		actual, err := main.ValidateWorkingDirectory(currentDir)
 		expected := currentDir
 
 		assert.NoError(t, err)
@@ -36,9 +36,9 @@ func TestValidateWorkingDirectory(t *testing.T) {
 		backendFile := currentDir + "/backend.tf"
 		os.Remove(backendFile)
 
-		_, err := tf.ValidateWorkingDirectory(currentDir)
+		_, err := main.ValidateWorkingDirectory(currentDir)
 
-		assert.True(t, err == tf.ErrInvalidWorkingDirectory, "expected error '%s', received none", tf.ErrInvalidWorkingDirectory)
+		assert.True(t, err == main.ErrInvalidWorkingDirectory, "expected error '%s', received none", main.ErrInvalidWorkingDirectory)
 	})
 }
 
@@ -73,7 +73,7 @@ func TestPlan(t *testing.T) {
 	t.Run("removes drift output", func(t *testing.T) {
 		executor := FakeExecutor{}
 
-		actual := tf.QuietPlan(executor)
+		actual := main.QuietPlan(executor)
 		expected := output_with_drift_removed
 
 		assert.Equals(t, expected, actual)
@@ -83,42 +83,42 @@ func TestPlan(t *testing.T) {
 func TestCanTurnFileOff(t *testing.T) {
 	t.Run("returns false for backend file", func(t *testing.T) {
 		file := "backend.tf"
-		assert.False(t, tf.CanTurnFileOff(file), "should NOT be able to turn %s off", file)
+		assert.False(t, main.CanTurnFileOff(file), "should NOT be able to turn %s off", file)
 	})
 	t.Run("returns false for providers file", func(t *testing.T) {
 		file := "providers.tf"
-		assert.False(t, tf.CanTurnFileOff(file), "should NOT be able to turn %s off", file)
+		assert.False(t, main.CanTurnFileOff(file), "should NOT be able to turn %s off", file)
 	})
 	t.Run("returns false for lock file", func(t *testing.T) {
 		file := ".terraform.locl.hcl"
-		assert.False(t, tf.CanTurnFileOff(file), "should NOT be able to turn %s off", file)
+		assert.False(t, main.CanTurnFileOff(file), "should NOT be able to turn %s off", file)
 	})
 	t.Run("returns true for files that have the TF extension", func(t *testing.T) {
 		file1 := "file1.tf"
 		file2 := "file2.tf"
-		assert.True(t, tf.CanTurnFileOff(file1), "should be able to turn %s off", file1)
-		assert.True(t, tf.CanTurnFileOff(file2), "should be able to turn %s off", file2)
+		assert.True(t, main.CanTurnFileOff(file1), "should be able to turn %s off", file1)
+		assert.True(t, main.CanTurnFileOff(file2), "should be able to turn %s off", file2)
 	})
 	t.Run("returns false for files that DONT have the TF extension", func(t *testing.T) {
 		file1 := "foo.bar"
 		file2 := "bar.baz"
-		assert.False(t, tf.CanTurnFileOff(file1), "should NOT be able to turn %s off", file1)
-		assert.False(t, tf.CanTurnFileOff(file2), "should NOT be able to turn %s off", file2)
+		assert.False(t, main.CanTurnFileOff(file1), "should NOT be able to turn %s off", file1)
+		assert.False(t, main.CanTurnFileOff(file2), "should NOT be able to turn %s off", file2)
 	})
 }
 
 func TestCanTurnFileOn(t *testing.T) {
 	t.Run("returns true for files that have the OFF extension", func(t *testing.T) {
-		file1 := "file1.tf" + tf.OffFileExtension
-		file2 := "file2.tf" + tf.OffFileExtension
-		assert.True(t, tf.CanTurnFileOn(file1), "should be able to turn %s on", file1)
-		assert.True(t, tf.CanTurnFileOn(file2), "should be able to turn %s on", file2)
+		file1 := "file1.tf" + main.OffFileExtension
+		file2 := "file2.tf" + main.OffFileExtension
+		assert.True(t, main.CanTurnFileOn(file1), "should be able to turn %s on", file1)
+		assert.True(t, main.CanTurnFileOn(file2), "should be able to turn %s on", file2)
 	})
 	t.Run("returns false for files that DONT have the OFF extension", func(t *testing.T) {
 		backendFile := "backend.tf"
 		lockFile := ".terraform.lock.hcl"
-		assert.False(t, tf.CanTurnFileOn(backendFile), "should NOT be able to turn %s on", backendFile)
-		assert.False(t, tf.CanTurnFileOn(lockFile), "should NOT be able to turn %s on", lockFile)
+		assert.False(t, main.CanTurnFileOn(backendFile), "should NOT be able to turn %s on", backendFile)
+		assert.False(t, main.CanTurnFileOn(lockFile), "should NOT be able to turn %s on", lockFile)
 	})
 }
 
@@ -143,7 +143,7 @@ func TestOff(t *testing.T) {
 		os.Create(backendFile)
 		defer os.Remove(backendFile)
 
-		err := tf.Off(currentDir)
+		err := main.Off(currentDir)
 
 		assert.NoError(t, err)
 		assertFileExists(t, backendFile)
@@ -154,7 +154,7 @@ func TestOff(t *testing.T) {
 		os.Create(lockFile)
 		defer os.Remove(lockFile)
 
-		err := tf.Off(currentDir)
+		err := main.Off(currentDir)
 
 		assert.NoError(t, err)
 		assertFileExists(t, lockFile)
@@ -162,15 +162,15 @@ func TestOff(t *testing.T) {
 	t.Run("adds OFF extension to TF files", func(t *testing.T) {
 		currentDir, _ := os.Getwd()
 		file1 := currentDir + "/one.tf"
-		file1off := file1 + tf.OffFileExtension
+		file1off := file1 + main.OffFileExtension
 		file2 := currentDir + "/two.tf"
-		file2off := file2 + tf.OffFileExtension
+		file2off := file2 + main.OffFileExtension
 		os.Create(file1)
 		os.Create(file2)
 		defer os.Remove(file1)
 		defer os.Remove(file2)
 
-		err := tf.Off(currentDir)
+		err := main.Off(currentDir)
 		defer os.Remove(file1off)
 		defer os.Remove(file2off)
 
@@ -186,15 +186,15 @@ func TestOn(t *testing.T) {
 	t.Run("removes OFF extension from TF files", func(t *testing.T) {
 		currentDir, _ := os.Getwd()
 		file1 := currentDir + "/one.tf"
-		file1off := file1 + tf.OffFileExtension
+		file1off := file1 + main.OffFileExtension
 		file2 := currentDir + "/two.tf"
-		file2off := file2 + tf.OffFileExtension
+		file2off := file2 + main.OffFileExtension
 		os.Create(file1off)
 		os.Create(file2off)
 		defer os.Remove(file1off)
 		defer os.Remove(file2off)
 
-		err := tf.On(currentDir)
+		err := main.On(currentDir)
 		defer os.Remove(file1)
 		defer os.Remove(file2)
 
