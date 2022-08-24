@@ -1,4 +1,4 @@
-package main
+package tfcmd
 
 import (
 	"errors"
@@ -12,13 +12,18 @@ import (
 
 const cmdName = "terraform"
 
-// ErrInvalidWorkingDirectory error constant
+// ErrInvalidWorkingDirectory error constant.
 var ErrInvalidWorkingDirectory = errors.New("invalid working directory: no backend.tf found")
 
-// OffFileExtension is the file extension used to turn .tf files off and on
+// OffFileExtension is the file extension used to turn .tf files off and on.
 var OffFileExtension = ".off"
 
-// ValidateWorkingDirectory determines if the supplied directory can be manipulated by this app
+// Executor is an interface to the struct in the command module
+type Executor interface {
+	Execute(cmdName string, cmdArgs ...string) ([]byte, error)
+}
+
+// ValidateWorkingDirectory determines if the supplied directory can be manipulated by this app.
 func ValidateWorkingDirectory(dir string) (string, error) {
 	if _, err := os.Stat(dir + "/backend.tf"); errors.Is(err, os.ErrNotExist) {
 		return dir, ErrInvalidWorkingDirectory
@@ -27,7 +32,7 @@ func ValidateWorkingDirectory(dir string) (string, error) {
 	return dir, nil
 }
 
-// CleanTerraformCache removes module cache and lock files from the supplied directory
+// CleanTerraformCache removes module cache and lock files from the supplied directory.
 func CleanTerraformCache(dir string) error {
 	err := os.RemoveAll(dir + "/.terraform")
 	if err != nil {
@@ -46,17 +51,17 @@ func CleanTerraformCache(dir string) error {
 	return nil
 }
 
-// InitializeTerraform runs the Terraform init command
-func InitializeTerraform(executor CommandExecutor) (string, error) {
+// InitializeTerraform runs the Terraform init command.
+func InitializeTerraform(executor Executor) (string, error) {
 	cmdArgs := []string{"init"}
 	result, err := executor.Execute(cmdName, cmdArgs...)
 
 	return string(result), err
 }
 
-// QuietPlan runs the Terraform plan command and strips out the drift output
-// replacing it with a summary of the stripped out text
-func QuietPlan(executor CommandExecutor) string {
+// QuietPlan runs the Terraform plan command and strips out the drift output,
+// replacing it with a summary of the stripped out text.
+func QuietPlan(executor Executor) string {
 	cmdArgs := []string{"plan"}
 	result, err := executor.Execute(cmdName, cmdArgs...)
 	if err != nil {
@@ -99,8 +104,8 @@ func QuietPlan(executor CommandExecutor) string {
 	return string(result)
 }
 
-// Off adds a file extension to select Terraform config files
-// effectively turning them off for subsequent Terraform operations
+// Off adds a file extension to select Terraform config files,
+// effectively turning them off for subsequent Terraform operations.
 func Off(dir string) error {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -121,13 +126,13 @@ func Off(dir string) error {
 	return nil
 }
 
-// CanTurnFileOff determines whether or not a file can have the "off" file extension
+// CanTurnFileOff determines whether or not a file can have the "off" file extension.
 func CanTurnFileOff(file string) bool {
 	return file != "backend.tf" && file != "providers.tf" && filepath.Ext(file) == ".tf"
 }
 
-// On removes the file extensions that makes Terraform ignore config files
-// effectively turning them on for subsequent Terraform operations
+// On removes the file extensions that makes Terraform ignore config files,
+// effectively turning them on for subsequent Terraform operations.
 func On(dir string) error {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -148,12 +153,13 @@ func On(dir string) error {
 	return nil
 }
 
-// CanTurnFileOn determines whether or not a file can have the "off" extenstion removed
+// CanTurnFileOn determines whether or not a file can have the "off" extenstion removed.
 func CanTurnFileOn(file string) bool {
 	return filepath.Ext(file) == OffFileExtension
 }
 
-func passThrough(executor CommandExecutor, cmdArgs []string) (string, error) {
+// PassThrough simply passes the commands to the Terraform binary, unmodified.
+func PassThrough(executor Executor, cmdArgs []string) (string, error) {
 	result, err := executor.Execute(cmdName, cmdArgs...)
 
 	return string(result), err

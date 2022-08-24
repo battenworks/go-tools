@@ -5,14 +5,10 @@ import (
 
 	"github.com/battenworks/go-tools/common/v2/command"
 	"github.com/battenworks/go-tools/common/v2/console"
+	"github.com/battenworks/go-tools/tf/v2/tfcmd"
 )
 
-// CommandExecutor is an interface to the struct in the command module
-type CommandExecutor interface {
-	Execute(cmdName string, cmdArgs ...string) ([]byte, error)
-}
-
-var executor CommandExecutor
+var executor tfcmd.Executor
 var version string = "built from source"
 
 func main() {
@@ -28,7 +24,7 @@ func main() {
 			workingDir := getWorkingDirectory()
 
 			console.Outln("removing terraform cache")
-			err := CleanTerraformCache(workingDir)
+			err := tfcmd.CleanTerraformCache(workingDir)
 			if err != nil {
 				console.Outln(err.Error())
 				break
@@ -36,19 +32,19 @@ func main() {
 			console.Greenln("terraform cache removed")
 
 			console.Outln("initializing terraform")
-			initResult, err := InitializeTerraform(executor)
+			initResult, err := tfcmd.InitializeTerraform(executor)
 			console.Out(initResult)
 			if err != nil {
 				break
 			}
 		case "qplan":
-			result := QuietPlan(executor)
+			result := tfcmd.QuietPlan(executor)
 
 			console.Out(result)
 		case "off":
 			workingDir := getWorkingDirectory()
 
-			err := Off(workingDir)
+			err := tfcmd.Off(workingDir)
 			if err != nil {
 				console.Outln(err.Error())
 				break
@@ -56,7 +52,7 @@ func main() {
 		case "on":
 			workingDir := getWorkingDirectory()
 
-			err := On(workingDir)
+			err := tfcmd.On(workingDir)
 			if err != nil {
 				console.Outln(err.Error())
 				break
@@ -64,7 +60,7 @@ func main() {
 		case "help", "-help", "--help":
 			usage()
 		default:
-			result, _ := passThrough(executor, os.Args[1:])
+			result, _ := tfcmd.PassThrough(executor, os.Args[1:])
 			console.Out(result)
 		}
 	} else {
@@ -79,7 +75,7 @@ func getWorkingDirectory() string {
 		os.Exit(1)
 	}
 
-	workingDir, err := ValidateWorkingDirectory(scope)
+	workingDir, err := tfcmd.ValidateWorkingDirectory(scope)
 	if err != nil {
 		console.Outln(err.Error())
 		os.Exit(1)
