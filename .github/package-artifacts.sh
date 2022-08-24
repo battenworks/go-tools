@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eux
 
-ROOT_DIR=$(pwd)
 VERSION=${GITHUB_REF#"refs/tags/"}
 VERSION=${VERSION#"refs/heads/"}
+ARTIFACT_DIR=$(pwd)/artifacts
 ARCHIVE_NAME="${BINARY_NAME}_${VERSION}_${GOOS}_${GOARCH}"
 EXT=''
 
@@ -13,7 +13,6 @@ fi
 
 cd ${BUILD_DIR}
 go build -ldflags "-X main.version=${VERSION}" -o ${ARTIFACT_DIR}/${BINARY_NAME}${EXT}
-cd ${ROOT_DIR}
 
 cd ${ARTIFACT_DIR}
 tar cvfz ${ARCHIVE_NAME}.tar.gz "${BINARY_NAME}${EXT}"
