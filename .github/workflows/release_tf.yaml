@@ -33,6 +33,7 @@ jobs:
         env:
           ARTIFACT_DIR: artifacts
           BINARY_NAME: tf
+          BUILD_DIR: tf
           GITHUB_REF: ${{ github.ref }}
           GOOS: ${{ matrix.os }}
       - uses: svenstaro/upload-release-action@v2
