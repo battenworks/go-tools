@@ -69,7 +69,7 @@ No changes. Your infrastructure matches the configuration.
 
 Your configuration already matches the changes detected above. If you'd like to update the Terraform state to match, create and apply a refresh-only plan.`
 
-func TestPlan(t *testing.T) {
+func TestQuietPlan(t *testing.T) {
 	t.Run("removes drift output", func(t *testing.T) {
 		executor := FakeExecutor{}
 

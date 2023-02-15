@@ -57,6 +57,16 @@ func main() {
 				console.Outln(err.Error())
 				break
 			}
+		case "test":
+			console.Outln("validating config")
+			result, err := tfcmd.PassThrough(executor, []string{"validate"})
+			if err != nil {
+				console.Outln(err.Error())
+				break
+			}
+			console.Out(result)
+
+			console.Outln("")
 		case "help", "-help", "--help":
 			usage()
 		default:
