@@ -37,10 +37,6 @@ func main() {
 			if err != nil {
 				break
 			}
-		case "qplan":
-			result := tfcmd.QuietPlan(executor)
-
-			console.Out(result)
 		case "off":
 			workingDir := getWorkingDirectory()
 
@@ -106,8 +102,6 @@ func usage() {
 	console.Whiteln("commands:")
 	console.Yellow("  clean")
 	console.Whiteln("\t- Removes, then re-initializes, the Terraform cache of the current scope")
-	console.Yellow("  qplan")
-	console.Whiteln("\t- Calls terraform plan and hides drift output that results from the refresh stage of the plan")
 	console.Yellow("  off")
 	console.Whiteln("\t- Adds the '.off' extension to all config files in the working directory")
 	console.Whiteln("\t  Useful for preparing to destroy all resources in the current scope")

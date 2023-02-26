@@ -9,14 +9,6 @@ import (
 	"github.com/battenworks/go-tools/tf/v2/tfcmd"
 )
 
-type FakeExecutor struct{}
-
-func (fe FakeExecutor) Execute(cmdName string, cmdArgs ...string) ([]byte, error) {
-	output := full_output
-
-	return []byte(output), nil
-}
-
 func TestValidateWorkingDirectory(t *testing.T) {
 	t.Run("succeeds when directory is valid", func(t *testing.T) {
 		currentDir, _ := os.Getwd()
@@ -39,44 +31,6 @@ func TestValidateWorkingDirectory(t *testing.T) {
 		_, err := tfcmd.ValidateWorkingDirectory(currentDir)
 
 		assert.True(t, err == tfcmd.ErrInvalidWorkingDirectory, "expected error '%s', received none", tfcmd.ErrInvalidWorkingDirectory)
-	})
-}
-
-const full_output = `Note: Objects have changed outside of Terraform
-
-\x1b[0mTerraform detected the following changes made outside of Terraform since the
-last "terraform apply":
-
-...
-truncated
-...
-
-\x1b[0mUnless you have made equivalent changes to your configuration, or ignored the
-\x1b[0mrelevant attributes using ignore_changes, the following plan may include
-\x1b[0mactions to undo or respond to these changes.
-
-─────────────────────────────────────────────────────────────────────────────
-
-No changes. Your infrastructure matches the configuration.
-
-Your configuration already matches the changes detected above. If you'd like to update the Terraform state to match, create and apply a refresh-only plan.`
-
-const output_with_drift_removed = `Note: Objects have changed outside of Terraform
-
----- 12 lines hidden ----
-
-No changes. Your infrastructure matches the configuration.
-
-Your configuration already matches the changes detected above. If you'd like to update the Terraform state to match, create and apply a refresh-only plan.`
-
-func TestQuietPlan(t *testing.T) {
-	t.Run("removes drift output", func(t *testing.T) {
-		executor := FakeExecutor{}
-
-		actual := tfcmd.QuietPlan(executor)
-		expected := output_with_drift_removed
-
-		assert.Equals(t, expected, actual)
 	})
 }
 

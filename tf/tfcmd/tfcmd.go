@@ -2,12 +2,9 @@ package tfcmd
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 const cmdName = "terraform"
@@ -57,51 +54,6 @@ func InitializeTerraform(executor Executor) (string, error) {
 	result, err := executor.Execute(cmdName, cmdArgs...)
 
 	return string(result), err
-}
-
-// QuietPlan runs the Terraform plan command and strips out the drift output,
-// replacing it with a summary of the stripped out text.
-func QuietPlan(executor Executor) string {
-	cmdArgs := []string{"plan"}
-	result, err := executor.Execute(cmdName, cmdArgs...)
-	if err != nil {
-		return string(result)
-	}
-
-	lines := strings.Split(string(result), "\n")
-	linesDiscarded := 0
-	filteredOutput := []string{}
-	discarding := false
-	regexBeginDiscard := regexp.MustCompile(`Terraform detected the following changes made outside of Terraform since the$`)
-	regexEndDiscard1 := regexp.MustCompile(`Unless you have made equivalent changes to your configuration, or ignored the$`)
-	regexEndDiscard2 := regexp.MustCompile(`relevant attributes using ignore_changes, the following plan may include$`)
-	regexEndDiscard3 := regexp.MustCompile(`actions to undo or respond to these changes.$`)
-
-	for i := 0; i < len(lines); i++ {
-		if regexBeginDiscard.Match([]byte(lines[i])) {
-			discarding = true
-		}
-
-		if discarding {
-			linesDiscarded++
-
-			if regexEndDiscard1.Match([]byte(lines[i])) &&
-				regexEndDiscard2.Match([]byte(lines[i+1])) &&
-				regexEndDiscard3.Match([]byte(lines[i+2])) {
-				i = i + 4
-				discarding = false
-				filteredOutput = append(filteredOutput, "---- "+fmt.Sprint(linesDiscarded+4)+" lines hidden ----")
-			}
-		} else {
-			filteredOutput = append(filteredOutput, lines[i])
-		}
-	}
-
-	if !discarding {
-		return strings.Join(filteredOutput, "\n")
-	}
-
-	return string(result)
 }
 
 // Off adds a file extension to select Terraform config files,
