@@ -3,6 +3,7 @@ package tfcmd
 import (
 	"errors"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -13,11 +14,6 @@ var ErrInvalidWorkingDirectory = errors.New("invalid working directory: no backe
 
 // OffFileExtension is the file extension used to turn .tf files off and on.
 var OffFileExtension = ".off"
-
-// Executor is an interface to the struct in the command module
-type Executor interface {
-	Execute(cmdName string, cmdArgs ...string) ([]byte, error)
-}
 
 // ValidateWorkingDirectory determines if the supplied directory can be manipulated by this app.
 func ValidateWorkingDirectory(dir string) (string, error) {
@@ -48,9 +44,9 @@ func CleanTerraformCache(dir string) error {
 }
 
 // InitializeTerraform runs the Terraform init command.
-func InitializeTerraform(executor Executor) (string, error) {
+func InitializeTerraform() (string, error) {
 	cmdArgs := []string{"init"}
-	result, err := executor.Execute(cmdName, cmdArgs...)
+	result, err := exec.Command(cmdName, cmdArgs...).CombinedOutput()
 
 	return string(result), err
 }
@@ -110,8 +106,8 @@ func CanTurnFileOn(file string) bool {
 }
 
 // PassThrough simply passes the commands to the Terraform binary, unmodified.
-func PassThrough(executor Executor, cmdArgs []string) (string, error) {
-	result, err := executor.Execute(cmdName, cmdArgs...)
+func PassThrough(cmdArgs []string) (string, error) {
+	result, err := exec.Command(cmdName, cmdArgs...).CombinedOutput()
 
 	return string(result), err
 }

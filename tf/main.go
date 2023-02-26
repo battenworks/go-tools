@@ -3,17 +3,13 @@ package main
 import (
 	"os"
 
-	"github.com/battenworks/go-tools/common/v2/command"
 	"github.com/battenworks/go-tools/common/v2/console"
 	"github.com/battenworks/go-tools/tf/v2/tfcmd"
 )
 
-var executor tfcmd.Executor
 var version string = "built from source"
 
 func main() {
-	executor = command.Executor{}
-
 	if len(os.Args) > 1 {
 		cmd := os.Args[1]
 
@@ -32,7 +28,7 @@ func main() {
 			console.Greenln("terraform cache removed")
 
 			console.Outln("initializing terraform")
-			initResult, err := tfcmd.InitializeTerraform(executor)
+			initResult, err := tfcmd.InitializeTerraform()
 			console.Out(initResult)
 			if err != nil {
 				break
@@ -55,7 +51,7 @@ func main() {
 			}
 		case "test":
 			console.Outln("validating config")
-			result, err := tfcmd.PassThrough(executor, []string{"validate"})
+			result, err := tfcmd.PassThrough([]string{"validate"})
 			if err != nil {
 				console.Outln(err.Error())
 				break
@@ -66,7 +62,7 @@ func main() {
 		case "help", "-help", "--help":
 			usage()
 		default:
-			result, _ := tfcmd.PassThrough(executor, os.Args[1:])
+			result, _ := tfcmd.PassThrough(os.Args[1:])
 			console.Out(result)
 		}
 	} else {
