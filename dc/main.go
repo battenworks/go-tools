@@ -62,6 +62,8 @@ func main() {
 			result, _ := dccmd.PassThrough(os.Args[1:])
 			console.Out(result)
 		}
+	} else {
+		usage()
 	}
 }
 
@@ -75,11 +77,11 @@ func usage() {
 	console.Whiteln("Usage: dc COMMAND")
 	console.Outln("")
 	console.Whiteln("commands:")
-	console.Yellow("  up")
+	console.Yellow("up")
 	console.Whiteln("\t- Brings the docker-compose environment up in disconnected mode")
-	console.Yellow("  down")
+	console.Yellow("down")
 	console.Whiteln("\t- Brings down the docker-compose environment and removes all volumes")
-	console.Yellow("  rebuild")
+	console.Yellow("rebuild")
 	console.Whiteln("\t- Brings down the docker-compose environment")
 	console.Whiteln("\t  Removes all volumes")
 	console.Whiteln("\t  Builds the docker-compose environment")
