@@ -4,7 +4,7 @@ set -eux
 VERSION=${GITHUB_REF#"refs/tags/"}
 VERSION=${VERSION#"refs/heads/"}
 ARTIFACT_DIR=$(pwd)/artifacts
-ARCHIVE_NAME="${BINARY_NAME}_${VERSION}_${GOOS}_${GOARCH}"
+ARCHIVE_NAME="${VERSION}_${GOOS}_${GOARCH}"
 EXT=''
 
 if [ $GOOS == 'windows' ]; then
