@@ -19,8 +19,8 @@ jobs:
     outputs:
       sha_linux: ${{ steps.shasum.outputs.sha_linux }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
           go-version: 1.19
       - run: go test ./tf/tests
@@ -35,7 +35,7 @@ jobs:
           BUILD_DIR: tf
           GITHUB_REF: ${{ github.ref }}
           GOOS: ${{ matrix.os }}
-      - uses: svenstaro/upload-release-action@v2
+      - uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: "artifacts/*{.tar.gz,.sha256}"
