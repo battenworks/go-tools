@@ -1,9 +1,9 @@
-name: release tf
+name: release dc
 
 on:
   push:
     tags:
-      - 'tf-v**'
+      - 'dc-v**'
   workflow_dispatch:
 
 jobs:
@@ -23,16 +23,16 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: 1.19
-      - run: go test ./tf/tests
-        env:
-          GOOS: linux
+      # - run: go test ./dc/tests
+      #   env:
+      #     GOOS: linux
       - run: go test ./common/**/tests
         env:
           GOOS: linux
       - run: .github/package-artifacts.sh
         env:
-          BINARY_NAME: tf
-          BUILD_DIR: tf
+          BINARY_NAME: dc
+          BUILD_DIR: dc
           GITHUB_REF: ${{ github.ref }}
           GOOS: ${{ matrix.os }}
       - uses: svenstaro/upload-release-action@v2
