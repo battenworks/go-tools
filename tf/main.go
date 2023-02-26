@@ -57,7 +57,6 @@ func main() {
 				break
 			}
 			console.Out(result)
-
 			console.Outln("")
 		case "help", "-help", "--help":
 			usage()
