@@ -2,7 +2,6 @@ package tfcmd
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -59,7 +58,7 @@ func InitializeTerraform(executor Executor) (string, error) {
 // Off adds a file extension to select Terraform config files,
 // effectively turning them off for subsequent Terraform operations.
 func Off(dir string) error {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return err
 	}
@@ -86,7 +85,7 @@ func CanTurnFileOff(file string) bool {
 // On removes the file extensions that makes Terraform ignore config files,
 // effectively turning them on for subsequent Terraform operations.
 func On(dir string) error {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return err
 	}
