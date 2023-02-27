@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/battenworks/go-tools/common/v2/console"
 	"github.com/battenworks/go-tools/tf/v2/tfcmd"
@@ -10,12 +11,14 @@ import (
 var version string = "built from source"
 
 func main() {
+	readable_version := "Version: " + strings.Replace(version, "dc_v", "", -1)
+
 	if len(os.Args) > 1 {
 		cmd := os.Args[1]
 
 		switch cmd {
 		case "version", "-v", "-version", "--version":
-			console.Outln("version: " + version)
+			console.Outln(readable_version)
 		case "clean":
 			workingDir := getWorkingDirectory()
 
@@ -59,13 +62,13 @@ func main() {
 			console.Out(result)
 			console.Outln("")
 		case "help", "-help", "--help":
-			usage()
+			usage(readable_version)
 		default:
 			result, _ := tfcmd.PassThrough(os.Args[1:])
 			console.Out(result)
 		}
 	} else {
-		usage()
+		usage(readable_version)
 	}
 }
 
@@ -85,12 +88,12 @@ func getWorkingDirectory() string {
 	return workingDir
 }
 
-func usage() {
+func usage(readable_version string) {
 	console.Whiteln("Wrapper for the Terraform CLI")
 	console.Whiteln("Provides some opinionated commands to help with Terraform CLI use")
 	console.Whiteln("All other commands are passed directly to the Terraform CLI")
 	console.Outln("")
-	console.Whiteln("Version: " + version)
+	console.Whiteln(readable_version)
 	console.Outln("")
 	console.Whiteln("Usage: tf COMMAND")
 	console.Outln("")
