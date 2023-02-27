@@ -11,7 +11,7 @@ import (
 var version string = "built from source"
 
 func main() {
-	readable_version := "Version: " + strings.Replace(version, "dc_v", "", -1)
+	readable_version := "Version: " + strings.Replace(version, "tf_v", "", -1)
 
 	if len(os.Args) > 1 {
 		cmd := os.Args[1]
