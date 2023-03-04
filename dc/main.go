@@ -20,6 +20,7 @@ func main() {
 		case "version", "-v", "-version", "--version":
 			console.Outln(readable_version)
 		case "up":
+			console.Greenln("up -d")
 			result, err := dccmd.Up()
 			if err != nil {
 				console.Outln(err.Error())
@@ -28,6 +29,7 @@ func main() {
 			console.Out(result)
 			console.Outln("")
 		case "down":
+			console.Yellowln("down -v")
 			result, err := dccmd.Down()
 			if err != nil {
 				console.Outln(err.Error())
@@ -36,6 +38,7 @@ func main() {
 			console.Out(result)
 			console.Outln("")
 		case "rebuild":
+			console.Yellowln("down -v")
 			result, err := dccmd.Down()
 			if err != nil {
 				console.Outln(err.Error())
@@ -44,6 +47,7 @@ func main() {
 			console.Out(result)
 			console.Outln("")
 
+			console.Cyanln("build")
 			result, err = dccmd.Build()
 			if err != nil {
 				console.Outln(err.Error())
@@ -52,6 +56,7 @@ func main() {
 			console.Out(result)
 			console.Outln("")
 
+			console.Greenln("up -d")
 			result, err = dccmd.Up()
 			if err != nil {
 				console.Outln(err.Error())
