@@ -3,7 +3,7 @@ name: release tf
 on:
   push:
     tags:
-      - 'tf_v**'
+      - 'tf_**'
   workflow_dispatch:
 
 jobs:

@@ -3,7 +3,7 @@ name: release dc
 on:
   push:
     tags:
-      - 'dc_v**'
+      - 'dc_**'
   workflow_dispatch:
 
 jobs:
