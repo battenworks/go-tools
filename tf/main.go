@@ -36,6 +36,16 @@ func main() {
 			if err != nil {
 				break
 			}
+		case "wipe":
+			workingDir := getWorkingDirectory()
+
+			console.Outln("removing terraform cache")
+			err := tfcmd.CleanTerraformCache(workingDir)
+			if err != nil {
+				console.Outln(err.Error())
+				break
+			}
+			console.Greenln("terraform cache removed")
 		case "off":
 			workingDir := getWorkingDirectory()
 
@@ -100,6 +110,8 @@ func usage(readable_version string) {
 	console.Whiteln("commands:")
 	console.Yellow("clean")
 	console.Whiteln("\t- Removes, then re-initializes, the Terraform cache of the current scope")
+	console.Yellow("wipe")
+	console.Whiteln("\t- Removes the Terraform cache and lock file from the current scope")
 	console.Yellow("off")
 	console.Whiteln("\t- Adds the '.off' extension to all config files in the working directory")
 	console.Whiteln("\t  Useful for preparing to destroy all resources in the current scope")
