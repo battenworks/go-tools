@@ -25,16 +25,14 @@ func main() {
 			console.Outln("removing terraform cache")
 			err := tfcmd.CleanTerraformCache(workingDir)
 			if err != nil {
-				console.Outln(err.Error())
-				break
+				os.Exit(1)
 			}
-			console.Greenln("terraform cache removed")
 
+			console.Greenln("terraform cache removed")
 			console.Outln("initializing terraform")
-			initResult, err := tfcmd.InitializeTerraform()
-			console.Out(initResult)
+			err = tfcmd.PassThrough([]string{"init"})
 			if err != nil {
-				break
+				os.Exit(1)
 			}
 		case "wipe":
 			workingDir := getWorkingDirectory()
@@ -42,40 +40,37 @@ func main() {
 			console.Outln("removing terraform cache")
 			err := tfcmd.CleanTerraformCache(workingDir)
 			if err != nil {
-				console.Outln(err.Error())
-				break
+				os.Exit(1)
 			}
+
 			console.Greenln("terraform cache removed")
 		case "off":
 			workingDir := getWorkingDirectory()
-
+			
 			err := tfcmd.Off(workingDir)
 			if err != nil {
-				console.Outln(err.Error())
-				break
+				os.Exit(1)
 			}
 		case "on":
 			workingDir := getWorkingDirectory()
 
 			err := tfcmd.On(workingDir)
 			if err != nil {
-				console.Outln(err.Error())
-				break
+				os.Exit(1)
 			}
 		case "test":
 			console.Outln("validating config")
-			result, err := tfcmd.PassThrough([]string{"validate"})
+			err := tfcmd.PassThrough([]string{"validate"})
 			if err != nil {
-				console.Outln(err.Error())
-				break
+				os.Exit(1)
 			}
-			console.Out(result)
-			console.Outln("")
 		case "help", "-help", "--help":
 			usage(readable_version)
 		default:
-			result, _ := tfcmd.PassThrough(os.Args[1:])
-			console.Out(result)
+			err := tfcmd.PassThrough(os.Args[1:])
+			if err != nil {
+				os.Exit(1)
+			}
 		}
 	} else {
 		usage(readable_version)
@@ -109,7 +104,7 @@ func usage(readable_version string) {
 	console.Outln("")
 	console.Whiteln("commands:")
 	console.Yellow("clean")
-	console.Whiteln("\t- Removes, then re-initializes, the Terraform cache of the current scope")
+	console.Whiteln("\t- Removes, then re-initializes, the Terraform cache and lock file of the current scope")
 	console.Yellow("wipe")
 	console.Whiteln("\t- Removes the Terraform cache and lock file from the current scope")
 	console.Yellow("off")

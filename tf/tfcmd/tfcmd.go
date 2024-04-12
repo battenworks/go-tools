@@ -3,9 +3,7 @@ package tfcmd
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -45,14 +43,6 @@ func CleanTerraformCache(dir string) error {
 	}
 
 	return nil
-}
-
-// InitializeTerraform runs the Terraform init command.
-func InitializeTerraform() (string, error) {
-	cmdArgs := []string{"init"}
-	result, err := exec.Command(cmdName, cmdArgs...).CombinedOutput()
-
-	return string(result), err
 }
 
 // Off adds a file extension to select Terraform config files,
@@ -110,23 +100,12 @@ func CanTurnFileOn(file string) bool {
 }
 
 // PassThrough simply passes the commands to the Terraform binary, unmodified.
-func PassThrough(cmdArgs []string) (string, error) {
-	result, err := exec.Command(cmdName, cmdArgs...).CombinedOutput()
-
-	return string(result), err
-}
-
-func PassThroughV2(cmdArgs []string) {
+func PassThrough(cmdArgs []string) error {
 	cmd := exec.Command(cmdName, cmdArgs...)
 
-	var stdoutBuf bytes.Buffer
+	var stdoutBuf, stderrBuf bytes.Buffer
 	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	outStr := string(stdoutBuf.String())
-	fmt.Print(outStr)
+	return cmd.Run()
 }
