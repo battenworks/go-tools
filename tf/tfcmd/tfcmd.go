@@ -1,7 +1,11 @@
 package tfcmd
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
+	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,12 +20,12 @@ var ErrInvalidWorkingDirectory = errors.New("invalid working directory: no backe
 var OffFileExtension = ".off"
 
 // ValidateWorkingDirectory determines if the supplied directory can be manipulated by this app.
-func ValidateWorkingDirectory(dir string) (string, error) {
+func ValidateWorkingDirectory(dir string) error {
 	if _, err := os.Stat(dir + "/backend.tf"); errors.Is(err, os.ErrNotExist) {
-		return dir, ErrInvalidWorkingDirectory
+		return ErrInvalidWorkingDirectory
 	}
 
-	return dir, nil
+	return nil
 }
 
 // CleanTerraformCache removes module cache and lock files from the supplied directory.
@@ -110,4 +114,19 @@ func PassThrough(cmdArgs []string) (string, error) {
 	result, err := exec.Command(cmdName, cmdArgs...).CombinedOutput()
 
 	return string(result), err
+}
+
+func PassThroughV2(cmdArgs []string) {
+	cmd := exec.Command(cmdName, cmdArgs...)
+
+	var stdoutBuf bytes.Buffer
+	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
+
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	outStr := string(stdoutBuf.String())
+	fmt.Print(outStr)
 }

@@ -83,13 +83,13 @@ func main() {
 }
 
 func getWorkingDirectory() string {
-	scope, err := os.Getwd()
+	workingDir, err := os.Getwd()
 	if err != nil {
 		console.Outln(err.Error())
 		os.Exit(1)
 	}
 
-	workingDir, err := tfcmd.ValidateWorkingDirectory(scope)
+	err = tfcmd.ValidateWorkingDirectory(workingDir)
 	if err != nil {
 		console.Outln(err.Error())
 		os.Exit(1)

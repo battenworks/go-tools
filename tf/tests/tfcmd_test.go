@@ -16,11 +16,9 @@ func TestValidateWorkingDirectory(t *testing.T) {
 		os.Create(backendFile)
 		defer os.Remove(backendFile)
 
-		actual, err := tfcmd.ValidateWorkingDirectory(currentDir)
-		expected := currentDir
+		err := tfcmd.ValidateWorkingDirectory(currentDir)
 
 		assert.NoError(t, err)
-		assert.Equals(t, expected, actual)
 	})
 
 	t.Run("fails when directory is invalid", func(t *testing.T) {
@@ -28,7 +26,7 @@ func TestValidateWorkingDirectory(t *testing.T) {
 		backendFile := currentDir + "/backend.tf"
 		os.Remove(backendFile)
 
-		_, err := tfcmd.ValidateWorkingDirectory(currentDir)
+		err := tfcmd.ValidateWorkingDirectory(currentDir)
 
 		assert.True(t, err == tfcmd.ErrInvalidWorkingDirectory, "expected error '%s', received none", tfcmd.ErrInvalidWorkingDirectory)
 	})
