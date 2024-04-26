@@ -77,8 +77,19 @@ func main() {
 				os.Exit(1)
 			}
 		case "test":
+			console.Outln("init and upgrade")
+			err := tfcmd.PassThrough([]string{"init", "-upgrade"})
+			if err != nil {
+				os.Exit(1)
+			}
+			
 			console.Outln("validating config")
-			err := tfcmd.PassThrough([]string{"validate"})
+			err = tfcmd.PassThrough([]string{"validate"})
+			if err != nil {
+				os.Exit(1)
+			}
+
+			err = tfcmd.PassThrough([]string{"test"})
 			if err != nil {
 				os.Exit(1)
 			}
@@ -116,7 +127,9 @@ func usage(readable_version string) {
 	console.Outln("")
 	console.Whiteln("commands:")
 	console.Yellow("clean")
-	console.Whiteln("\t- Removes, then re-initializes, the Terraform cache and lock file of the current scope")
+	console.Whiteln("\t- Removes the Terraform cache and lock file from the current scope, then runs 'init'")
+	console.Yellow("test")
+	console.Whiteln("\t- Runs 'init -upgrade', then 'validate', then 'test'")
 	console.Yellow("wipe")
 	console.Whiteln("\t- Removes the Terraform cache and lock file from the current scope")
 	console.Yellow("off")
