@@ -22,8 +22,14 @@ func main() {
 		case "clean":
 			workingDir := getWorkingDirectory()
 
+			err := tfcmd.ValidateWorkingDirectory(workingDir)
+			if err != nil {
+				console.Outln(err.Error())
+				os.Exit(1)
+			}
+
 			console.Outln("removing terraform cache")
-			err := tfcmd.CleanTerraformCache(workingDir)
+			err = tfcmd.CleanTerraformCache(workingDir)
 			if err != nil {
 				os.Exit(1)
 			}
@@ -46,15 +52,27 @@ func main() {
 			console.Greenln("terraform cache removed")
 		case "off":
 			workingDir := getWorkingDirectory()
-			
-			err := tfcmd.Off(workingDir)
+
+			err := tfcmd.ValidateWorkingDirectory(workingDir)
+			if err != nil {
+				console.Outln(err.Error())
+				os.Exit(1)
+			}
+
+			err = tfcmd.Off(workingDir)
 			if err != nil {
 				os.Exit(1)
 			}
 		case "on":
 			workingDir := getWorkingDirectory()
 
-			err := tfcmd.On(workingDir)
+			err := tfcmd.ValidateWorkingDirectory(workingDir)
+			if err != nil {
+				console.Outln(err.Error())
+				os.Exit(1)
+			}
+
+			err = tfcmd.On(workingDir)
 			if err != nil {
 				os.Exit(1)
 			}
@@ -79,12 +97,6 @@ func main() {
 
 func getWorkingDirectory() string {
 	workingDir, err := os.Getwd()
-	if err != nil {
-		console.Outln(err.Error())
-		os.Exit(1)
-	}
-
-	err = tfcmd.ValidateWorkingDirectory(workingDir)
 	if err != nil {
 		console.Outln(err.Error())
 		os.Exit(1)
