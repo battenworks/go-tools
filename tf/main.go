@@ -83,12 +83,6 @@ func main() {
 				os.Exit(1)
 			}
 			
-			console.Outln("validating config")
-			err = tfcmd.PassThrough([]string{"validate"})
-			if err != nil {
-				os.Exit(1)
-			}
-
 			err = tfcmd.PassThrough([]string{"test"})
 			if err != nil {
 				os.Exit(1)
