@@ -9,6 +9,11 @@ import (
 	"path/filepath"
 )
 
+
+// What if this object coordinated more stuff. could probably test its behavior better
+// maybe hand it the entire string of stuff and say "execute"
+
+
 const cmdName = "terraform"
 
 // ErrInvalidWorkingDirectory error constant.

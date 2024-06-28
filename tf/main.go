@@ -6,6 +6,8 @@ import (
 
 	"github.com/battenworks/go-tools/common/v2/console"
 	"github.com/battenworks/go-tools/tf/v2/tfcmd"
+
+	// "github.com/hashicorp/terraform-exec/tfexec"
 )
 
 var version string = "built from source"
@@ -17,6 +19,15 @@ func main() {
 		cmd := os.Args[1]
 
 		switch cmd {
+		// case "apply":
+		// 	workingDir := getWorkingDirectory()
+		// 	te, err := tfexec.NewTerraform(workingDir, "")
+		// 	if err != nil {
+		// 		console.Outln(err.Error())
+		// 		os.Exit(1)
+		// 	}
+		// 	te.Apply()
+
 		case "version", "-v", "-version", "--version":
 			console.Outln(readable_version)
 		case "clean":
